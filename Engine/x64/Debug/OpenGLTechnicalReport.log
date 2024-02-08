@@ -1,3 +1,22 @@
-﻿  main.cpp
-C:\Users\Doosh\Desktop\Engine\DissProj\main.cpp(80,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-  OpenGLTechnicalReport.vcxproj -> C:\Users\Doosh\Desktop\Engine\DissProj\x64\Debug\OpenGLTechnicalReport.exe
+﻿  GameObject.cpp
+  main.cpp
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\main.cpp(80,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  mesh.cpp
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\mesh.cpp(106,51): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\mesh.cpp(180,21): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  model.cpp
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\model.cpp(21,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\model.cpp(27,27): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\model.cpp(37,27): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\model.cpp(40,31): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\model.cpp(72,23): warning C4018: '<': signed/unsigned mismatch
+  Renderer.cpp
+  ResourceManager.cpp
+  rigidbody.cpp
+  Scene.cpp
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\Scene.cpp(30,16): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\Scene.cpp(56,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
+  glad.c
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  OpenGLTechnicalReport.vcxproj -> C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\OpenGLTechnicalReport.exe
