@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <map>
-#include "model.h"
+#include "Model.h"
 #include "GameObject.h"
 
 class Scene

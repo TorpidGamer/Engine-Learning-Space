@@ -1,14 +1,16 @@
 #pragma once
-#include "model.h"
-#include "rigidbody.h"
+#include "Model.h"
+#include "Rigidbody.h"
 class ResourceManager;
 class GameObject
 {
 public:
 	Model* model;
 	RigidBody rb;
+	std::string name;
+	bool useRigidBodyCollider = false;
 
-	GameObject(Model* mod);
+	GameObject(Model* mod, std::string _name);
 
 	void Update(float deltaTime);
 	void Draw(Shader shader);

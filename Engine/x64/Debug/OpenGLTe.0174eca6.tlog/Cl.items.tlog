@@ -1,9 +1,10 @@
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\CollisionHandler.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\CollisionHandler.obj
 C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\GameObject.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\GameObject.obj
 C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\glad.c;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\glad.obj
 C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\main.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\main.obj
-C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\mesh.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\mesh.obj
-C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\model.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\model.obj
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\Mesh.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\Mesh.obj
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\Model.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\Model.obj
 C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\Renderer.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\Renderer.obj
 C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\ResourceManager.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\ResourceManager.obj
-C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\rigidbody.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\rigidbody.obj
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\Rigidbody.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\Rigidbody.obj
 C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\Scene.cpp;C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\Scene.obj

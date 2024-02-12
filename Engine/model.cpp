@@ -1,4 +1,10 @@
-#include "model.h"
+#include "Model.h"
+
+Model::Model()
+{
+    std::cout << "Warning, model may not be present, are you sure you're supposed to call this?" << std::endl;
+}
+
 
 Model::Model(Mesh mesh)
 {
@@ -51,6 +57,11 @@ Model::Model(std::string path)
             textures.insert(textures.end(), specMaps.begin(), specMaps.end());
         }
         meshes.push_back(Mesh(vertices, indices, textures, false));
+        for (int v = 0; v < curMesh->mNumVertices; v++)
+        {
+            aiVector3D fN = curMesh->mNormals[(v + 2) % curMesh->mNumVertices];
+            meshes[meshes.size() - 1].surfaceNormals.push_back(glm::vec3(fN.x, fN.y, fN.z));
+        }
     }
 }
 

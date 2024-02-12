@@ -1,4 +1,4 @@
-#include"mesh.h"
+#include"Mesh.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
 unsigned int LoadTextureFromFile(const char* path, const std::string& directory, bool recursive)
@@ -196,8 +196,16 @@ Mesh::Mesh(std::vector<Vertex> verts, std::vector<unsigned int> indi, std::vecto
 			vertices[vertexIndexA].vertexNormal = triangleNormal;
 			vertices[vertexIndexB].vertexNormal = triangleNormal;
 			vertices[vertexIndexC].vertexNormal = triangleNormal;
+			surfaceNormals.push_back(triangleNormal);
 		}
 	}
+
+	calculateEdges();
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		localSpacePosition += vertices[i].vertexPosition;
+	}
+	localSpacePosition /= vertices.size();
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -224,4 +232,12 @@ Mesh::Mesh(std::vector<Vertex> verts, std::vector<unsigned int> indi, std::vecto
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textureCoord));
 
 	glBindVertexArray(0);
+}
+
+void Mesh::calculateEdges()
+{
+	for (int i = 0; i < vertices.size(); i += 2)
+	{
+		edges.push_back(vertices[(i + 1) % vertices.size()].vertexPosition - vertices[i].vertexPosition);
+	}
 }

@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <string>
 #include <vector>
-#include "shader.h"
+#include "Shader.h"
 void LoadTextureManually(unsigned int* id, int width, int height, int channels, unsigned char* texData);
 unsigned int LoadTextureFromFile(const char* path, const std::string& directory, bool recursive = true);
 
@@ -37,14 +37,17 @@ struct Mesh {
 	glm::vec3 position = glm::vec3(0);
 	glm::vec3 scale = glm::vec3(1);
 	glm::vec3 rotAxis = glm::vec3(1);
+	std::vector<glm::vec3> edges, surfaceNormals;
 	float rotationAmount = 0; 
 
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
+	glm::vec3 localSpacePosition;
 
 	unsigned int VAO, VBO, EBO;
 	Mesh(std::vector<Vertex> verts, std::vector<unsigned int> indi, std::vector<Texture> texes, bool genNormals = false);
+	void calculateEdges();
 };
 
 void DrawMesh(Shader shader, Mesh* meshToDraw);

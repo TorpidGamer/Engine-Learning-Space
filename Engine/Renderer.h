@@ -2,9 +2,9 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <string>
-#include "shader.h"
-#include "model.h"
-#include "camera.h"
+#include "Shader.h"
+#include "Model.h"
+#include "Camera.h"
 #include <map>
 class Renderer
 {

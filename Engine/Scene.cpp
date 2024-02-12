@@ -12,7 +12,7 @@ void Scene::UpdateScene(float deltaTime)
 {	
 	for (auto& i : SceneObjects)
 	{
-		i.second->rb.Step(deltaTime, Orbit(&i.second->rb));
+		i.second->rb.Step(deltaTime, /*Orbit(&i.second->rb)*/ glm::vec3(0, -1, 0));
 	}
 }
 

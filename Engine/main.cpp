@@ -8,11 +8,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "camera.h"
-#include "model.h"
+#include "Camera.h"
+#include "Model.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Scene.h"
+#include "CollisionHandler.h"
 
 //Prototypes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -93,8 +94,8 @@ int main() {
     Model cube = rm.CreateResource<Model>("models/Cube.glb");
     Model mechabandicoot = rm.CreateResource<Model>("models/mechabandicoot/mech.obj");
     cube.meshes[0].textures.push_back(rm.CreateResource<Texture>("../Common/resources/wall.jpg"));
-    //cube.meshes[0].scale = glm::vec3(20, 1, 20);
-    cube.meshes[0].scale = glm::vec3(1, 1, 1);
+    cube.meshes[0].scale = glm::vec3(40, 1, 40);
+    //cube.meshes[0].scale = glm::vec3(1, 1, 1);
     //backpack.position = glm::vec3(10, 2, 0);
     crash.position = glm::vec3(1, -1.f, 1);
     cube.position = glm::vec3(0, -2, 0);
@@ -106,17 +107,20 @@ int main() {
     //baseScene.SceneObjects["Crash"]->rb.velocity = glm::vec3(1600, 0, 0);
     //baseScene.SceneObjects["Crash"]->rb.mass = 10;
 
-    baseScene.SceneObjects["Crash2"] = new GameObject(new Model("models/crash/crash.obj"));
-    baseScene.SceneObjects["Crash2"]->rb.position = glm::vec3(0, 0, 0);
-    baseScene.SceneObjects["Crash2"]->rb.velocity = glm::vec3(400, 0, 0);
+    baseScene.SceneObjects["Crash2"] = new GameObject(new Model("models/crash/crash.obj"), "Crash2");
+    baseScene.SceneObjects["Crash2"]->rb.position = glm::vec3(0, 100, 0);
+    baseScene.SceneObjects["Crash2"]->rb.velocity = glm::vec3(0, 0, 0);
     baseScene.SceneObjects["Crash2"]->rb.mass = 10;
+    baseScene.SceneObjects["Crash2"]->useRigidBodyCollider = true;
 
-    baseScene.SceneObjects["Mechabandicoot"] = new GameObject(&mechabandicoot);
+    /*baseScene.SceneObjects["Mechabandicoot"] = new GameObject(&mechabandicoot);
     baseScene.SceneObjects["Mechabandicoot"]->rb.position = glm::vec3(0, 0, 250);
     baseScene.SceneObjects["Mechabandicoot"]->rb.mass = 2000;
     baseScene.SceneObjects["Mechabandicoot"]->rb.isStatic = true;
-   /* baseScene.SceneObjects["Floor"] = new GameObject(&cube);
-    baseScene.SceneObjects["Floor"]->rb.mass = 10;*/
+    baseScene.SceneObjects["Mechabandicoot"]->useRigidBodyCollider = true;*/
+
+    baseScene.SceneObjects["Floor"] = new GameObject(&cube, "Floor");
+    baseScene.SceneObjects["Floor"]->rb.isStatic = true;
 
     projectionMatrix = glm::perspective(glm::radians(45.f), (float)SCR_WIDTH/SCR_HEIGHT, 0.01f, 10000.f);
 
@@ -151,7 +155,29 @@ int main() {
 
         //Update
         if (gravity)
+        {
             baseScene.UpdateScene(deltaTime);
+
+            for (auto& x : baseScene.SceneObjects)
+            {
+                for (auto& y : baseScene.SceneObjects)
+                {
+                    if (x == y) continue;
+                    CollisionDetails collision = IsOverlapped(x.second, y.second);
+                    if (collision.overlapped)
+                    {
+                        std::cout << x.first << " Collided with " << y.first << std::endl;
+                        std::cout << "Collision Details: " << std::endl;
+                        std::cout << "Normal: " << collision.normal.x << ", " << collision.normal.y << ", " << collision.normal.z << ", " << std::endl;
+                        std::cout << "Depth: " << collision.depth << std::endl;
+                        std::cout << "Type: " << collision.collisionType << std::endl;
+                        std::cout << std::endl;
+                        if (!x.second->rb.isStatic) x.second->rb.velocity += -collision.normal * collision.depth;
+                        if (!y.second->rb.isStatic) y.second->rb.velocity += -collision.normal * collision.depth;
+                    }
+                }
+            }
+        }
 
         lightPos = baseScene.SceneObjects["Crash2"]->rb.position;
         ourShader.setVec3("lightPos", lightPos);
