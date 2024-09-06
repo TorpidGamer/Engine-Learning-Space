@@ -46,7 +46,8 @@ struct Mesh {
 	glm::vec3 localSpacePosition;
 
 	unsigned int VAO, VBO, EBO;
-	Mesh(std::vector<Vertex> verts, std::vector<unsigned int> indi, std::vector<Texture> texes, bool genNormals = false);
+	bool Null = true;
+	Mesh(std::vector<Vertex> verts, std::vector<unsigned int> indi, std::vector<Texture> texes, bool genNormals = true);
 	void calculateEdges();
 };
 

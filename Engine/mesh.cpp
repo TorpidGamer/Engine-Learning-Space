@@ -178,7 +178,7 @@ Mesh::Mesh(std::vector<Vertex> verts, std::vector<unsigned int> indi, std::vecto
 	if (genNormals)
 	{
 		int triangleCount = indices.size() / 3;
-		for (int i = 0; i < triangleCount; i++)
+		for (int i = 0; i < triangleCount; i+=2)
 		{
 			int triangleIndex = i * 3;
 			int vertexIndexA = indices[triangleIndex];
@@ -232,12 +232,14 @@ Mesh::Mesh(std::vector<Vertex> verts, std::vector<unsigned int> indi, std::vecto
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textureCoord));
 
 	glBindVertexArray(0);
+
+	Null = false;
 }
 
 void Mesh::calculateEdges()
 {
-	for (int i = 0; i < vertices.size(); i += 2)
+	for (int i = 0; i < indices.size(); i += 2)
 	{
-		edges.push_back(vertices[(i + 1) % vertices.size()].vertexPosition - vertices[i].vertexPosition);
+		edges.push_back(vertices[indices[i]].vertexPosition - vertices[indices[i+1>=indices.size() ? 0 : i+1]].vertexPosition);
 	}
 }

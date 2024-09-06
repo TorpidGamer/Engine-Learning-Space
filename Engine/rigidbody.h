@@ -25,14 +25,18 @@ struct BoxShape {
 
 class RigidBody {
 public:
-	glm::vec3 position;
+	//glm::vec3 position;
 	glm::vec3 velocity = glm::vec3(0);
 	glm::vec3 force;
 	BoxShape PhysicsBox;
 	Model collisionModel;
+	Model* transform;
 	float mass = 1;
+	float friction = .95f;
 	bool isStatic = false;
+	bool colliding = false;
 
 	void Step(float dt, glm::vec3 forceToApply);
-	Model GenerateCollisionShape(Model* generateAround, float width = 0, float height = 0, float depth = 0);
+	Model GenerateCollisionShape(Model* generateAround, float width = 1, float height = 1, float depth = 1);
+	void AddForce(glm::vec3 forceToAdd);
 };

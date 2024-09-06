@@ -6,25 +6,35 @@ void RigidBody::Step(float dt, glm::vec3 forceToApply)
 	{
 		force += forceToApply;
 		velocity += force * dt;
+		if (colliding)	velocity *= friction;
+		//std::cout << "velocity: " << velocity.x << ", " << velocity.y << ", " << velocity.z << std::endl;
 
-		position += (velocity * dt);
+		transform->position += velocity;
 
 		force = glm::vec3(0);
 	}
-	collisionModel.position = position;
+	collisionModel.position = transform->position * transform->meshes[0].scale;
+}
+
+void RigidBody::AddForce(glm::vec3 forceToAdd)
+{
+	force += forceToAdd;
 }
 
 Model RigidBody::GenerateCollisionShape(Model* generateAround, float width, float height, float depth)
 {
+	transform = generateAround;
 	float top = 0, right = 0, left = 0, bottom = 0, back = 0, front = 0;
 	if (generateAround != nullptr)
 	{
+		//Loops through all meshes
 		for (int j = 0; j < generateAround->meshes.size(); j++)
 		{
 			Mesh curMesh = generateAround->meshes[j];
 			for (int i = 0; i < curMesh.vertices.size(); i++)
 			{
-				glm::vec3 curPoint = curMesh.vertices[i].vertexPosition * curMesh.scale;
+				//Loops through each vertex to find the outer bounds of the model to wrap the shape around
+				glm::vec3 curPoint = curMesh.vertices[i].vertexPosition * generateAround->meshes[j].scale;
 				if (curPoint.y > top) top = curPoint.y;
 				if (curPoint.y < bottom) bottom = curPoint.y;
 				if (curPoint.x > right) right = curPoint.x;
@@ -36,6 +46,7 @@ Model RigidBody::GenerateCollisionShape(Model* generateAround, float width, floa
 	}
 	else
 	{
+		std::cout << "Using predefined measurements to generate collision shape" << std::endl;
 		top = height;
 		bottom = -height;
 		right = width;
@@ -43,7 +54,7 @@ Model RigidBody::GenerateCollisionShape(Model* generateAround, float width, floa
 		front = depth;
 		back = -depth;
 	}
-	
+	//Generates a model for the collision shape
 	vector<Vertex> vertices = {
 		Vertex(glm::vec3(left, top, back), glm::vec3(0), glm::vec2(0)),
 		Vertex(glm::vec3(left, top, front), glm::vec3(0), glm::vec2(0)),
@@ -81,6 +92,5 @@ Model RigidBody::GenerateCollisionShape(Model* generateAround, float width, floa
 		1, 3, 5,
 		5, 3, 7
 	};
-
 	return Model(Mesh(vertices, indices, vector<Texture>(), true));
 }

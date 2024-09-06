@@ -1,6 +1,6 @@
 #include "CollisionHandler.h"
 
-CollisionDetails CalculateDetails(glm::vec3 axis, glm::vec2 projection1, glm::vec2 projection2, CollisionDetails* currentDetails, std::string name)
+CollisionDetails CalculateDetails(glm::vec3 axis, glm::vec2 projection1, glm::vec2 projection2, CollisionDetails* currentDetails, std::string name, int num)
 {
 	float longSpan = std::max(projection1.y, projection2.y) - std::min(projection1.x, projection2.x);
 	float sumSpan = projection1.y - projection1.x + projection2.y - projection2.x;
@@ -20,6 +20,7 @@ CollisionDetails CalculateDetails(glm::vec3 axis, glm::vec2 projection1, glm::ve
 		currentDetails->depth = axisDepth;
 		currentDetails->normal = axis;
 		currentDetails->collisionType = name;
+		currentDetails->number = num;
 		if (currentDetails->normal.x == 0 && currentDetails->normal.y == 0 && currentDetails->normal.z == 0)
 		{
 			currentDetails->depth = previousDepth;
@@ -37,8 +38,8 @@ CollisionDetails IsOverlapped(GameObject* obj1, GameObject* obj2)
 	};
 	//second point - first point = edge
 	Model* modelsToTest[2] = {
-		objects[0]->useRigidBodyCollider ? &objects[0]->rb.collisionModel : objects[0]->model,
-		objects[1]->useRigidBodyCollider ? &objects[1]->rb.collisionModel : objects[1]->model
+		&objects[0]->rb->collisionModel,
+		&objects[1]->rb->collisionModel
 	};
 	CollisionDetails collisionDeets;
 
@@ -46,19 +47,19 @@ CollisionDetails IsOverlapped(GameObject* obj1, GameObject* obj2)
 	collisionDeets.normal = glm::vec3(0);
 	collisionDeets.overlapped = true;
 
-	glm::vec3 objectScale[2] = { objects[0]->model->meshes[0].scale, objects[1]->model->meshes[0].scale };
+	glm::vec3 objectScale[2] = { modelsToTest[0]->meshes[0].scale, modelsToTest[1]->meshes[0].scale};
 
-	glm::vec3 objectPos[2] = { objects[0]->rb.position, objects[1]->rb.position };
+	glm::vec3 objectPos[2] = { modelsToTest[0]->position, modelsToTest[1]->position };
 	int objectMeshToTest[2] = { 0 };
-	float objectClosestMeshDist[2]{ glm::distance(objects[0]->model->meshes[0].localSpacePosition + objectPos[0], objectPos[1]),
-		glm::distance(objects[1]->model->meshes[0].localSpacePosition + objectPos[1], objectPos[0]) };
+	float objectClosestMeshDist[2]{ glm::distance(modelsToTest[0]->meshes[0].localSpacePosition + objectPos[0], objectPos[1]),
+		glm::distance(modelsToTest[1]->meshes[0].localSpacePosition + objectPos[1], objectPos[0]) };
 
-	for (int o = 0; o < 1; o++)
+	for (int o = 0; o < 2; o++)
 	{
 		for (int i = 1; i < modelsToTest[o]->meshes.size(); i++)
 		{
 			int otherObj = o == 1 ? 0 : 1;
-			float dist = glm::distance(modelsToTest[o]->meshes[i].localSpacePosition + objectPos[o], objectPos[otherObj]);
+			float dist = glm::distance(objectPos[o], objectPos[otherObj]);
 			if (dist < objectClosestMeshDist[o])
 			{
 				objectClosestMeshDist[o] = dist;
@@ -67,16 +68,14 @@ CollisionDetails IsOverlapped(GameObject* obj1, GameObject* obj2)
 			}
 		}
 	}
-	//glm::vec3 objectMeshPosition[2] = { modelsToTest[0]->meshes[objectMeshToTest[0]].position, modelsToTest[1]->meshes[objectMeshToTest[1]].position };
 	vector<glm::vec3> normalsToTest[2] = { modelsToTest[0]->meshes[objectMeshToTest[0]].surfaceNormals, modelsToTest[1]->meshes[objectMeshToTest[1]].surfaceNormals };
 	vector<glm::vec3> objectEdges[2] = { modelsToTest[0]->meshes[objectMeshToTest[0]].edges, modelsToTest[1]->meshes[objectMeshToTest[1]].edges };
-	//cout << "Testing obj1: " << obj1->name << ", mesh no. " << meshToTest1 << endl;
-	//cout << "Testing obj2: " << obj2->name << ", mesh no. " << meshToTest2 << endl;
 
 	for (int o = 0; o < 2; o++)
 	{
 		int otherObj = o == 1 ? 0 : 1;
 		//Test normals
+		//std::cout << "Testing " << normalsToTest[o].size() << " normals" << std::endl;
 		for (int i = 0; i < normalsToTest[o].size(); i++)
 		{
 			glm::vec2 project1, project2;
@@ -84,10 +83,14 @@ CollisionDetails IsOverlapped(GameObject* obj1, GameObject* obj2)
 			project1 = ProjectVertices(modelsToTest[o], axis, objectMeshToTest[o]);
 			project2 = ProjectVertices(modelsToTest[otherObj], axis, objectMeshToTest[otherObj]);
 
-			collisionDeets = CalculateDetails(axis, project1, project2, &collisionDeets, "normals " + objects[o]->name);
+			collisionDeets = CalculateDetails(axis, project1, project2, &collisionDeets, "normals " + objects[o]->name, i);
+			if (!collisionDeets.overlapped)
+			{
+				break;
+			}
 		}
-
 		//Test edges
+		//std::cout << "Testing " << objectEdges[o].size() << " edges" << std::endl;
 		for (int i = 0; i < objectEdges[o].size(); i++)
 		{
 			if (objectEdges[otherObj].size() == 0)
@@ -103,9 +106,17 @@ CollisionDetails IsOverlapped(GameObject* obj1, GameObject* obj2)
 			project1 = ProjectVertices(modelsToTest[o], axis, objectMeshToTest[o]);
 			project2 = ProjectVertices(modelsToTest[otherObj], axis, objectMeshToTest[otherObj]);
 
-			collisionDeets = CalculateDetails(axis, project1, project2, &collisionDeets, "edges " + objects[o]->name);
+			collisionDeets = CalculateDetails(axis, project1, project2, &collisionDeets, "edges " + objects[o]->name, i);
+			if (!collisionDeets.overlapped)
+			{
+				break;
+			}
 		}
+
 	}
+
+	if (!collisionDeets.overlapped) return collisionDeets;
+	//std::cout << "Collision overlap must be true" << std::endl;
 
 	//If we reached this point the objects overlap so return details
 
@@ -114,14 +125,19 @@ CollisionDetails IsOverlapped(GameObject* obj1, GameObject* obj2)
 
 	collisionDeets.depth;
 	if (collisionDeets.depth < minDepth) collisionDeets.depth = minDepth;
-	if (collisionDeets.normal.x == 0 && collisionDeets.normal.y == 0 && collisionDeets.normal.z == 0); //cout << "Normal not Valid" << endl;
+	if ((collisionDeets.normal.x == 0 || collisionDeets.normal.x == -0) && (collisionDeets.normal.y == 0 || collisionDeets.normal.y == -0) &&
+		(collisionDeets.normal.z == 0 || collisionDeets.normal.z == -0))
+	{
+		std::cout << "Normal not Valid" << std::endl;
+		return collisionDeets;
+	}
 	else
 	{
 		collisionDeets.normal = glm::normalize(collisionDeets.normal);
-		collisionDeets.normal.x = 0;
-		collisionDeets.normal.z = 0;
+		//collisionDeets.normal.x = 0;
+		//collisionDeets.normal.z = 0;
 	}
-	if (isnan(collisionDeets.normal.x)) std::cout << "Normalized Normal Nan" << std::endl;
+	//if (isnan(collisionDeets.normal.x)) std::cout << "Normalized Normal Nan" << std::endl;
 	glm::vec3 intendedDir = modelsToTest[1]->position - modelsToTest[0]->position;
 	if (glm::dot(intendedDir, collisionDeets.normal) <= 0.f)
 	{

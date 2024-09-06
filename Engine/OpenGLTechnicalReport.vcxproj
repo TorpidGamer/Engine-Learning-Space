@@ -154,6 +154,7 @@
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneCollection.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />

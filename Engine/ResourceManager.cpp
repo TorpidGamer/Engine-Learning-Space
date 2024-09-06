@@ -1,16 +1,16 @@
 #include "ResourceManager.h"
 
-template<typename Resource> Resource ResourceManager::CreateResource(std::string path)
+template<typename Resource> Resource* ResourceManager::CreateResource(std::string path)
 {
 	std::cout << "Incompatible type loaded, Seek medical help" << std::endl;
 }
 
-template<> Model ResourceManager::CreateResource(std::string path)
+template<> Model* ResourceManager::CreateResource(std::string path)
 {
-	return Model(path);
+	return new Model(path);
 }
 
-template<> Texture ResourceManager::CreateResource(std::string path)
+template<> Texture* ResourceManager::CreateResource(std::string path)
 {
-	return Texture(path);
+	return new Texture(path);
 }

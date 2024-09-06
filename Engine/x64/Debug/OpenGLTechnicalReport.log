@@ -1,4 +1,4 @@
-﻿  CollisionHandler.cpp
-C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\CollisionHandler.cpp(112,17): warning C4305: 'initializing': truncation from 'double' to 'float'
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+﻿  main.cpp
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\main.cpp(85,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\main.cpp(169,39): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   OpenGLTechnicalReport.vcxproj -> C:\Users\Doosh\Documents\GitHub\Engine-Learning-Space\Engine\x64\Debug\OpenGLTechnicalReport.exe
