@@ -6,7 +6,7 @@ void RigidBody::Step(float dt, glm::vec3 forceToApply)
 	{
 		force += forceToApply;
 		velocity += force * dt;
-		if (colliding)	velocity *= friction;
+		if (colliding)	velocity *= friction; //If colliding apply friction
 		//std::cout << "velocity: " << velocity.x << ", " << velocity.y << ", " << velocity.z << std::endl;
 
 		transform->position += velocity;

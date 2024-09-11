@@ -42,7 +42,7 @@ ResourceManager rm;
 bool play = false;
 bool toggle = false;
 bool clearBuffer = true;
-bool debugCollisions = true;
+bool debugCollisions = false;
 
 //Time Variables
 float deltaTime = 0.0f;
@@ -73,6 +73,7 @@ int main() {
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+    glfwSwapInterval(0);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -136,7 +137,7 @@ int main() {
 
         // update
         if (play)
-        {
+        {   
             scene->UpdateScene(deltaTime);
             int collisionTests = 0;
             for (auto& x : scene->SceneObjects)
@@ -164,26 +165,33 @@ int main() {
                             std::cout << "Type: " << collision.collisionType << " at " << collision.number << std::endl;
                             std::cout << std::endl;
                         }
-                        glm::vec3 rV = x.second->rb->velocity - y.second->rb->velocity; 
-                        //Relative Velocity
-                        float impulse = -(1 + 1.0f) * glm::dot(rV, collision.normal * collision.depth) / ((glm::pow(x.second->rb->mass, -1)) + (glm::pow(y.second->rb->mass, -1))); 
-                        //impulse = -(1 + e)dot(Vr N)
-                        //e (coefficient of restitution) how elastic the collision is
+                        //Experimental collision resolution code
+                        //glm::vec3 rV = x.second->rb->velocity - y.second->rb->velocity;
+                        ////Relative Velocity
+                        //float collisionVelocity = -(1 + 1.0f) * (glm::dot(rV, collision.normal * collision.depth));
+                        ////Taking in the direction of the collision and an elasticity amount
+                        //float impulse = collisionVelocity / ((glm::pow(x.second->rb->mass, -1)) + (glm::pow(y.second->rb->mass, -1)));
+                        ////impulse = -(1 + e)dot(Vr N)
+                        ////e (coefficient of restitution) how elastic the collision is
+                        //glm::vec3 testVec = (float)glm::pow(x.second->rb->mass, -1) * impulse * (collision.normal);
+                        //std::cout << "Collision speed: " << testVec.x << ", " << testVec.y << ", " << testVec.z << "\n";
 
-                        if (!x.second->rb->isStatic) 
-                            x.second->rb->velocity = x.second->rb->velocity - (float)glm::pow(x.second->rb->mass, -1) * impulse * (collision.normal * collision.depth);
+                        /*if (!x.second->rb->isStatic) 
+                            x.second->rb->velocity = x.second->rb->velocity - ((float)glm::pow(x.second->rb->mass, -1)) * impulse * (-collision.normal);
                         if (!y.second->rb->isStatic)
-                            y.second->rb->velocity = y.second->rb->velocity + (float)glm::pow(y.second->rb->mass, -1) * impulse * (collision.normal * collision.depth);
-                            
-                        std::cout << "Collision" << std::endl;
+                            y.second->rb->velocity = y.second->rb->velocity + ((float)glm::pow(y.second->rb->mass, -1)) * impulse * (collision.normal);*/
+
+                        if (!x.second->rb->isStatic)
+                            x.second->rb->velocity -= ((collision.normal * collision.depth) * (float)glm::pow(x.second->rb->mass, -1) / 2.f);
+                        if (!y.second->rb->isStatic)
+                            y.second->rb->velocity += ((collision.normal * collision.depth) * (float)glm::pow(y.second->rb->mass, -1) / 2.f);
                     }
                 }
             }
-            //std::cout << "There were " << collisionTests << " collision tests" << std::endl;
             if (toggle) play = false;
         }
 
-        lightPos = camera.Position;
+        lightPos = scene->SceneObjects["Crash"]->model->position;
         ourShader.setVec3("lightPos", lightPos);
 
         //Render 
@@ -209,40 +217,55 @@ int main() {
 void SceneGeneration()
 {
     scene = new Scene();
-    //Model backpack = rm.CreateResource<Model>("models/backpack/backpack.obj");
     Model *cube = rm.CreateResource<Model>("models/Cube.glb");
+    //Cube needs a manually defined texture or it uses the last called one
     cube->meshes[0].textures.push_back(*rm.CreateResource<Texture>("../Common/resources/wall.jpg"));
     for (int i = 0; i < cube->meshes.size(); i++)
     {
         cube->meshes[i].scale = glm::vec3(50, 20, 50);
     }
-    //backpack.position = glm::vec3(10, 2, 0);
-    //.SceneObjects["Backpack"] = new GameObject(&backpack);
 
     scene->SceneObjects["Crash"] = new GameObject(new Model("models/crash/crash.obj"), "Crash");
-    scene->SceneObjects["Crash"]->model->position = glm::vec3(-40, 100, 0);
-    scene->SceneObjects["Crash"]->rb->velocity = glm::vec3(0.1f, -0.7f, 0);
-    scene->SceneObjects["Crash"]->rb->mass = 1;
+    scene->SceneObjects["Crash"]->model->position = glm::vec3(-400, 100, 0);
+    scene->SceneObjects["Crash"]->rb->velocity = glm::vec3(0.1f, -0.4f, 0);
 
-    scene->SceneObjects["Crash2"] = new GameObject(new Model("models/crash/crash.obj"), "Crash2");
-    GameObject* crash = scene->SceneObjects["Crash2"];
+    scene->SceneObjects["Crash02"] = new GameObject(new Model("models/crash/crash.obj"), "Crash02");
+    GameObject* crash = scene->SceneObjects["Crash02"];
     for (int i = 0; i < crash->model->meshes.size(); i++)
     {
         crash->model->meshes[i].scale = glm::vec3(1, 2, 1);
     }
-    scene->SceneObjects["Crash2"]->model->position = glm::vec3(120, 100, 0);
-    scene->SceneObjects["Crash2"]->rb->velocity = glm::vec3(0.f, 0, 0);
-    scene->SceneObjects["Crash2"]->rb->mass = 1;
+    scene->SceneObjects["Crash02"]->model->position = glm::vec3(420, -100, 0);
+    scene->SceneObjects["Crash02"]->rb->velocity = glm::vec3(0.f, 0.4f, 0);
+    for (int i = 0; i < 4; i++)
+    {
+        std::string iS = std::to_string(i);
+        scene->SceneObjects["Crash" + iS] = new GameObject(new Model("models/crash/crash.obj"), "Crash" + iS);
+        std::cout << "Crash" + iS << " Created\n";
+    }
 
-    //SceneObjects["Mechabandicoot"] = new GameObject(new Model("models/mechabandicoot/mech.obj"), "Mechacoot");
-    //SceneObjects["Mechabandicoot"]->rb->position = glm::vec3(0, 0, 0);
-    //SceneObjects["Mechabandicoot"]->rb->mass = 200000;
-    //SceneObjects["Mechabandicoot"]->rb->isStatic = true;
+    scene->SceneObjects["Crash0"]->model->position = glm::vec3(0, 400, 100);
+    scene->SceneObjects["Crash0"]->rb->velocity = glm::vec3(0.f, 0.f, 0.4f);
 
-    scene->SceneObjects["Floor"] = new GameObject(cube, "Floor");
-    scene->SceneObjects["Floor"]->rb->isStatic = true;
-    scene->SceneObjects["Floor"]->rb->mass = 10000;
-    scene->SceneObjects["Floor"]->model->position = glm::vec3(0, -10, 0);
+    scene->SceneObjects["Crash1"]->model->position = glm::vec3(0, -400, -100);
+    scene->SceneObjects["Crash1"]->rb->velocity = glm::vec3(0.f, 0.f, -0.4f);
+
+    scene->SceneObjects["Crash2"]->model->position = glm::vec3(100, 0, 400);
+    scene->SceneObjects["Crash2"]->rb->velocity = glm::vec3(0.4f, 0.f, 0.f);
+
+    scene->SceneObjects["Crash3"]->model->position = glm::vec3(-100, 0, -400);
+    scene->SceneObjects["Crash3"]->rb->velocity = glm::vec3(-0.4f, 0.f, 0.f);
+
+    scene->SceneObjects["Mechabandicoot"] = new GameObject(new Model("models/mechabandicoot/mech.obj"), "Mechacoot");
+    scene->SceneObjects["Mechabandicoot"]->model->position = glm::vec3(0, 0, 0);
+    scene->SceneObjects["Mechabandicoot"]->rb->mass = 200000;
+    scene->SceneObjects["Mechabandicoot"]->rb->isStatic = false;
+
+    //Floor which was previously used to test collisions
+    //scene->SceneObjects["Floor"] = new GameObject(cube, "Floor");
+    ////scene->SceneObjects["Floor"]->rb->isStatic = true;
+    //scene->SceneObjects["Floor"]->rb->mass = 200000;
+    //scene->SceneObjects["Floor"]->model->position = glm::vec3(0, -10, 0);
     for (auto& i : scene->SceneObjects)
     {
         i.second->rb->collisionModel = i.second->rb->GenerateCollisionShape(i.second->model);
@@ -291,6 +314,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void ProcessInputs(GLFWwindow* window) {
     
     camera.MovementSpeed = 500.f; // adjust accordingly
+    //This is what switches the control from the camera to crash on play, comment out / remove true condition if you only want camera control
     if (play)
     {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
